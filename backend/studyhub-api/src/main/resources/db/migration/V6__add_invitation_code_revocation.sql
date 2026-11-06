@@ -7,9 +7,11 @@
 -- (identified in Sprint 1 Validation Gate — F-DB-001).
 
 -- Step 1: Add revocation columns
+-- Note: AFTER clause omitted — H2 MySQL MODE does not support column positioning.
+-- Column order does not affect correctness; MySQL production will append at end.
 ALTER TABLE invitation_codes
-    ADD COLUMN revoked    BOOLEAN    NOT NULL DEFAULT FALSE AFTER used_at,
-    ADD COLUMN revoked_at DATETIME(6)         NULL         AFTER revoked;
+    ADD COLUMN revoked    BOOLEAN    NOT NULL DEFAULT FALSE,
+    ADD COLUMN revoked_at DATETIME(6)         NULL;
 
 -- Step 2: Add performance indexes (separate statements for H2 compatibility)
 CREATE INDEX idx_invitation_codes_created_by ON invitation_codes (created_by);
