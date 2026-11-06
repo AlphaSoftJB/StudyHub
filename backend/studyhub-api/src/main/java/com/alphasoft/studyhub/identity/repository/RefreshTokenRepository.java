@@ -21,7 +21,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
      * Revoke all tokens in a refresh family. Used when reuse is detected
      * (token rotation security — Sprint 2) or on explicit logout.
      */
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("""
            UPDATE RefreshToken rt
            SET rt.revoked = true, rt.revokedAt = :now
@@ -32,7 +32,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
     /**
      * Revoke all active tokens for a user. Used on logout-all or account suspension.
      */
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("""
            UPDATE RefreshToken rt
            SET rt.revoked = true, rt.revokedAt = :now
