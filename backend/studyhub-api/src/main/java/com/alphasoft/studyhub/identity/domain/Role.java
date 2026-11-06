@@ -1,4 +1,4 @@
-package com.alphasoft.studyhub.domain.identity.entity;
+package com.alphasoft.studyhub.identity.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;

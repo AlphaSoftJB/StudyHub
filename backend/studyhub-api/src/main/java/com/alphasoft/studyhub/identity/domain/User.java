@@ -1,4 +1,4 @@
-package com.alphasoft.studyhub.domain.identity.entity;
+package com.alphasoft.studyhub.identity.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.util.Set;
  *
  * Security notes:
  *  - passwordHash stores BCrypt output only; plaintext is never persisted.
- *  - emailVerified starts false; set true on email confirmation (Phase 2).
+ *  - emailVerified starts false; set true on email confirmation (Sprint 2).
  *  - active=false blocks login without deleting the account (soft-disable).
  */
 @Entity

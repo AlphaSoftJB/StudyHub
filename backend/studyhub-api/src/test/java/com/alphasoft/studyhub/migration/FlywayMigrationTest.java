@@ -1,7 +1,7 @@
 package com.alphasoft.studyhub.migration;
 
-import com.alphasoft.studyhub.domain.identity.entity.Role;
-import com.alphasoft.studyhub.domain.identity.repository.RoleRepository;
+import com.alphasoft.studyhub.identity.domain.Role;
+import com.alphasoft.studyhub.identity.repository.RoleRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

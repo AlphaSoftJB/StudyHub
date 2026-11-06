@@ -1,6 +1,6 @@
-package com.alphasoft.studyhub.domain.identity.repository;
+package com.alphasoft.studyhub.identity.repository;
 
-import com.alphasoft.studyhub.domain.identity.entity.Role;
+import com.alphasoft.studyhub.identity.domain.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

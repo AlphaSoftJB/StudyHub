@@ -1,10 +1,10 @@
 package com.alphasoft.studyhub.migration;
 
-import com.alphasoft.studyhub.domain.identity.entity.InvitationCode;
-import com.alphasoft.studyhub.domain.identity.entity.RefreshToken;
-import com.alphasoft.studyhub.domain.identity.entity.Role;
-import com.alphasoft.studyhub.domain.identity.entity.User;
-import com.alphasoft.studyhub.domain.identity.repository.*;
+import com.alphasoft.studyhub.identity.domain.InvitationCode;
+import com.alphasoft.studyhub.identity.domain.RefreshToken;
+import com.alphasoft.studyhub.identity.domain.Role;
+import com.alphasoft.studyhub.identity.domain.User;
+import com.alphasoft.studyhub.identity.repository.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,6 +125,34 @@ class SchemaValidationTest {
         assertThat(revoked.isRevoked()).isTrue();
         assertThat(revoked.getRevokedAt()).isNotNull();
         assertThat(revoked.isValid()).isFalse();
+    }
+
+    @Test
+    @DisplayName("InvitationCode.findUsableByCode returns empty for revoked codes (V6)")
+    void invitation_code_revoked_not_returned_as_usable() {
+        User admin = userRepository.save(new User("admin3@example.com", "hash", "Admin3"));
+        Instant expires = Instant.now().plus(7, ChronoUnit.DAYS);
+
+        InvitationCode code = new InvitationCode("revoked-code", admin, expires);
+        InvitationCode saved = invitationCodeRepository.save(code);
+        invitationCodeRepository.flush();
+
+        // Verify usable before revocation
+        assertThat(invitationCodeRepository.findUsableByCode("revoked-code")).isPresent();
+
+        // Revoke via entity helper
+        saved.revoke();
+        invitationCodeRepository.save(saved);
+        invitationCodeRepository.flush();
+
+        // Must not be returned as usable after revocation
+        assertThat(invitationCodeRepository.findUsableByCode("revoked-code")).isEmpty();
+
+        // Confirm row still exists (audit preservation) and revoked_at is set
+        InvitationCode found = invitationCodeRepository.findByCode("revoked-code").orElseThrow();
+        assertThat(found.isRevoked()).isTrue();
+        assertThat(found.getRevokedAt()).isNotNull();
+        assertThat(found.isUsable()).isFalse();
     }
 
     @Test

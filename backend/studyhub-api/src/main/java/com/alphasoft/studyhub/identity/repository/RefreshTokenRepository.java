@@ -1,6 +1,6 @@
-package com.alphasoft.studyhub.domain.identity.repository;
+package com.alphasoft.studyhub.identity.repository;
 
-import com.alphasoft.studyhub.domain.identity.entity.RefreshToken;
+import com.alphasoft.studyhub.identity.domain.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
