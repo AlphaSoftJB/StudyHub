@@ -1,8 +1,10 @@
 package com.alphasoft.studyhub.config;
 
+import com.alphasoft.studyhub.identity.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -10,32 +12,58 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 /**
- * Spring Security configuration — Sprint 1 foundation.
+ * Sprint 2 SecurityConfig — wires JWT authentication filter, CSRF protection,
+ * CORS allowlist, and authorization rules.
  *
- * Sprint 1 scope:
- *   - Stateless sessions (no HttpSession)
- *   - Actuator /health permitted without authentication
- *   - All other endpoints require authentication (locked down by default)
- *   - CSRF disabled (stateless REST API; tokens are in-memory / httpOnly cookie)
- *   - No JWT filter yet — added in Sprint 2 when auth endpoints are implemented
+ * Key design decisions (DR-009):
  *
- * Sprint 2 will add:
- *   - JwtAuthenticationFilter (before UsernamePasswordAuthenticationFilter)
- *   - Permit /api/v1/auth/** (login, register, refresh)
- *   - Role-based access on /api/v1/admin/**
- *   - CORS configuration bean
+ * 1. STATELESS — no HttpSession; every request must carry its own credentials.
+ *
+ * 2. CSRF — double-submit cookie pattern (CookieCsrfTokenRepository).
+ *    - XSRF-TOKEN cookie is NOT httpOnly (JS must be able to read it).
+ *    - X-XSRF-TOKEN header required on state-changing requests.
+ *    - Login and register are EXEMPT (no CSRF cookie exists at that point).
+ *    - Refresh, logout, logout-all ENFORCE CSRF.
+ *
+ * 3. CORS — strict allowlist from studyhub.cors.allowed-origins.
+ *    No wildcard + credentials.
+ *
+ * 4. JWT filter — runs before UsernamePasswordAuthenticationFilter.
+ *    Invalid/missing tokens result in anonymous SecurityContext;
+ *    protected endpoints return 401 via the AuthenticationEntryPoint.
+ *
+ * 5. Authorization rules:
+ *    - /actuator/health — public
+ *    - /api/v1/auth/login, /api/v1/auth/register — public
+ *    - /api/v1/admin/** — ROLE_ADMIN only
+ *    - everything else — authenticated
+ *
+ * Context-path is /api (set in application.yml), so full URLs include /api prefix,
+ * but Security filter matching uses the request URI (which includes /api).
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    /**
-     * Returns 401 Unauthorized (not 403 Forbidden) for unauthenticated requests.
-     * 401 is semantically correct: the client is not authenticated, so it should
-     * supply credentials. 403 means authenticated but not authorized.
-     */
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final StudyHubProperties      props;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                          StudyHubProperties props) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.props                   = props;
+    }
+
     @Bean
     public AuthenticationEntryPoint unauthorizedEntryPoint() {
         return (request, response, authException) ->
@@ -45,25 +73,67 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            // 1. Stateless — no server-side session
             .sessionManagement(sm ->
                 sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .csrf(csrf -> csrf.disable())
+
+            // 2. CSRF — double-submit cookie pattern (DR-009)
+            //    ignoringRequestMatchers paths include the context-path prefix /api
+            //    because Spring Security matches against the full request URI.
+            .csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                .ignoringRequestMatchers(
+                    // Health check — no session/cookie context
+                    "/api/actuator/health",
+                    // Login and register: CSRF cookie doesn't exist yet at these calls
+                    "/api/v1/auth/login",
+                    "/api/v1/auth/register"
+                )
+            )
+
+            // 3. CORS — allowlist from studyhub.cors.allowed-origins
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+            // 4. JWT filter — populate SecurityContext from Bearer token
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+            // 5. 401 for unauthenticated requests (not Spring's default 403)
             .exceptionHandling(ex ->
                 ex.authenticationEntryPoint(unauthorizedEntryPoint()))
+
+            // 6. Authorization rules
             .authorizeHttpRequests(auth -> auth
-                // Actuator health check — open for load-balancer / uptime probes
+                // Public — no token required
                 .requestMatchers("/actuator/health").permitAll()
-                // Everything else locked down until auth filter is wired (Sprint 2)
+                .requestMatchers(HttpMethod.POST, "/v1/auth/login", "/v1/auth/register").permitAll()
+                // Admin only
+                .requestMatchers("/v1/admin/**").hasRole("ADMIN")
+                // Everything else requires authentication
                 .anyRequest().authenticated()
             );
 
         return http.build();
     }
 
-    /**
-     * BCrypt password encoder — work factor 12 (OWASP recommendation for 2024+).
-     * Injected into the registration service (Sprint 2).
-     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        // Allowed origins from configuration (DR-009: no wildcard with credentials)
+        config.setAllowedOrigins(props.cors().allowedOrigins());
+
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-XSRF-TOKEN"));
+        config.setExposedHeaders(List.of("Authorization"));
+        config.setAllowCredentials(true);  // Required for httpOnly cookies
+        config.setMaxAge(3600L);           // 1 hour preflight cache
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
