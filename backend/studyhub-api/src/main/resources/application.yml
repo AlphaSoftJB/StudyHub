@@ -75,20 +75,6 @@ studyhub:
     weekly-ceiling-usd: ${AI_WEEKLY_CEILING_USD:25.00}
     alert-threshold-usd: ${AI_ALERT_THRESHOLD_USD:20.00}
 
-# ── Actuator ─────────────────────────────────────────────────────────────────
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health
-      base-path: /actuator
-  endpoint:
-    health:
-      show-details: when-authorized   # full details only for authenticated users
-  health:
-    defaults:
-      enabled: true
-
 # ── Logging ───────────────────────────────────────────────────────────────────
 logging:
   level:
