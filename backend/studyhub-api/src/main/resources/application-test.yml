@@ -17,7 +17,6 @@ spring:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
-    repair-on-migrate: true   # auto-repair any failed-migration rows before each run (H2 in-memory)
 
 studyhub:
   jwt:
