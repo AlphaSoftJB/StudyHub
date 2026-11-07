@@ -1,7 +1,16 @@
 package com.alphasoft.studyhub.curriculum.service;
 
-import com.alphasoft.studyhub.curriculum.domain.*;
-import com.alphasoft.studyhub.curriculum.repository.*;
+import com.alphasoft.studyhub.curriculum.domain.ContentStatus;
+import com.alphasoft.studyhub.curriculum.domain.Course;
+import com.alphasoft.studyhub.curriculum.domain.Discipline;
+import com.alphasoft.studyhub.curriculum.domain.Lesson;
+import com.alphasoft.studyhub.curriculum.domain.Question;
+import com.alphasoft.studyhub.curriculum.domain.Module;
+import com.alphasoft.studyhub.curriculum.repository.CourseRepository;
+import com.alphasoft.studyhub.curriculum.repository.DisciplineRepository;
+import com.alphasoft.studyhub.curriculum.repository.LessonRepository;
+import com.alphasoft.studyhub.curriculum.repository.ModuleRepository;
+import com.alphasoft.studyhub.curriculum.repository.QuestionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
