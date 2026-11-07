@@ -1,47 +1,87 @@
 # IBM Python + ML Curriculum Map
 **Sprint 3 — Curriculum Intelligence Directive deliverable**
 
-Version: 1.0  
+Version: 2.0  
 Date: 2026-11-06  
-Scope: IBM Python Fundamentals, Machine Learning Core, Applied AI — Pilot discipline  
-Source content: `ibmCurriculum.js` (57 days, 3 phases), `ibmLabs.js` (55 labs), `pythonCertExam.js` (100 questions)  
+Governing document: StudyHub Global Curriculum & Certification Master Plan 2026–2027  
+Domain assignment: **DOM-03 AI/ML** (not DOM-01; not a standalone discipline)  
+Source content: `ibmCurriculum.js` (57 days, 3 phases), `ibmLabs.js` (55 labs), `pythonCertExam.js` (100 questions, shared with DOM-01)  
 Status: **DRAFT — Requires owner validation before seed script execution**
 
 ---
 
-## 1. Discipline Structure (StudyHub Model)
+## Change Log
 
-```
-Discipline: IBM Python + ML
-│
-├── Course: Python Fundamentals              [Phase 0, ~20 days]
-│     ├── Module 1: Language Basics          [Days 1–5]
-│     ├── Module 2: Data Structures          [Days 6–10]
-│     ├── Module 3: Functions & OOP          [Days 11–15]
-│     └── Module 4: Practical Scripting      [Days 16–20]
-│
-├── Course: Machine Learning Core            [Phase 1, ~20 days]
-│     ├── Module 1: ML Concepts & Math       [Days 1–5]
-│     ├── Module 2: Supervised Learning      [Days 6–10]
-│     ├── Module 3: Unsupervised Learning    [Days 11–15]
-│     └── Module 4: Model Evaluation         [Days 16–20]
-│
-└── Course: Applied AI & Production          [Phase 2, ~17 days]
-      ├── Module 1: MLOps & Pipelines        [Days 1–5]
-      ├── Module 2: APIs & Deployment        [Days 6–10]
-      ├── Module 3: Advanced Topics (LLMs)   [Days 11–14]
-      └── Module 4: Capstone Projects        [Days 15–17]
-```
-
-**Source phase keys:** `'0'` (Python Fundamentals), `'1'` (ML Core), `'2'` (Applied AI). These numeric string keys must be normalized to named identifiers in the seed script.
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | 2026-11-06 | Initial — framed as standalone "IBM Python + ML" discipline |
+| 2.0 | 2026-11-06 | Realigned to master plan: IBM ML content is DOM-03 AI/ML; CYB-004 Python content remains in DOM-01; pythonCertExam.js sharing strategy documented |
 
 ---
 
-## 2. Official Curriculum Alignment
+## ⚠️ Domain Realignment Notice
 
-### 2.1 IBM Python Fundamentals Alignment
+**v1.0 of this document treated IBM Python+ML as a standalone discipline.** Per the master plan:
 
-The curriculum aligns with IBM's Python for Data Science, AI & Development course (IBM Skills Network / Coursera). Key topic alignment:
+- **CYB-004 (Python for Security & Automation)** → DOM-01 Cybersecurity. This course covers Python scripting as a security tool. The `pythonCertExam.js` question bank supports this course as its primary certification pool.
+- **IBM Python Fundamentals** → DOM-03 AI/ML. Python as a data science and ML foundation language belongs in the AI/ML domain.
+- **IBM Machine Learning Core** → DOM-03 AI/ML.
+- **IBM Applied AI & Production** → DOM-03 AI/ML.
+
+The three IBM courses below carry DOM-03 course IDs, assigned in the master plan phased delivery (Phase 4). **Sprint 3 scope covers Phase 1 (DOM-01) only.** This document is retained for curriculum intelligence completeness and to unblock future DOM-03 sprint planning.
+
+**Sprint 3 action:** No seed script work for DOM-03 content. Record this map as Phase 4 prerequisite documentation.
+
+---
+
+## 1. Domain Structure (StudyHub Model)
+
+**Domain:** DOM-03 AI/ML  
+**Delivery phase:** Phase 4 (future sprint — not Sprint 3 scope)
+
+```
+Domain: DOM-03 AI/ML
+│
+├── [future] AI-001: Python Fundamentals for Data Science   [~20 days — 📋 PROPOSED]
+│     ├── Module 1: Language Basics                         [📋 PROPOSED, maps to ibmCurriculum.js Phase 0 days 1–5]
+│     ├── Module 2: Data Structures                         [📋 PROPOSED, maps to Phase 0 days 6–10]
+│     ├── Module 3: Functions & OOP                         [📋 PROPOSED, maps to Phase 0 days 11–15]
+│     └── Module 4: Practical Scripting & Libraries         [📋 PROPOSED, maps to Phase 0 days 16–20]
+│
+├── [future] AI-002: Machine Learning Core                  [~20 days — 📋 PROPOSED]
+│     ├── Module 1: ML Concepts & Math                      [📋 PROPOSED, maps to ibmCurriculum.js Phase 1 days 1–5]
+│     ├── Module 2: Supervised Learning                     [📋 PROPOSED, maps to Phase 1 days 6–10]
+│     ├── Module 3: Unsupervised Learning                   [📋 PROPOSED, maps to Phase 1 days 11–15]
+│     └── Module 4: Model Evaluation & Pipelines            [📋 PROPOSED, maps to Phase 1 days 16–20]
+│
+└── [future] AI-003: Applied AI & Production                [~17 days — 📋 PROPOSED]
+      ├── Module 1: MLOps & Pipelines                       [📋 PROPOSED, maps to ibmCurriculum.js Phase 2 days 1–5]
+      ├── Module 2: APIs & Model Deployment                 [📋 PROPOSED, maps to Phase 2 days 6–10]
+      ├── Module 3: Advanced Topics (LLMs)                  [📋 PROPOSED, maps to Phase 2 days 11–14 — ⚠️ AI content controls apply]
+      └── Module 4: Capstone Projects                       [📋 PROPOSED, maps to Phase 2 days 15–17]
+```
+
+**Note:** Course IDs above are placeholders. Final DOM-03 course IDs are assigned by the master plan at Phase 4 planning time. Source keys `'0'` / `'1'` / `'2'` from ibmCurriculum.js must be normalized to named course slugs at seed time.
+
+---
+
+## 2. Source Phase Key Normalization (Phase 4 Seed Prerequisite)
+
+| Source key | Proposed course slug | Proposed course title | Domain |
+|------------|---------------------|----------------------|--------|
+| `'0'` | `ai-python-fundamentals` | Python Fundamentals for Data Science | DOM-03 |
+| `'1'` | `ai-machine-learning-core` | Machine Learning Core | DOM-03 |
+| `'2'` | `ai-applied-ai-production` | Applied AI & Production | DOM-03 |
+
+**Owner confirmation required at Phase 4 planning:** Course titles, slugs, and IDs must be confirmed before DOM-03 seed script execution.
+
+---
+
+## 3. Official Curriculum Alignment
+
+### 3.1 IBM Python Fundamentals (Phase 0 → AI-001)
+
+Aligns with IBM's Python for Data Science, AI & Development course (IBM Skills Network / Coursera):
 
 | Week/Topic in ibmCurriculum.js | IBM Skills Network Module | Coverage |
 |-------------------------------|--------------------------|----------|
@@ -51,9 +91,9 @@ The curriculum aligns with IBM's Python for Data Science, AI & Development cours
 | File I/O & Error Handling (Wk 3–4) | Module 4: Working with Data | ✅ |
 | NumPy, Pandas (Wk 4) | Module 5: APIs and Data Collection | ✅ |
 
-**Assessment:** Strong alignment with IBM Skills Network Python course objectives. The bootcamp adds hands-on scripting exercises beyond the IBM baseline, which is an enhancement.
+**Assessment:** Strong alignment. Hands-on scripting exercises enhance IBM baseline.
 
-### 2.2 Machine Learning Core Alignment
+### 3.2 Machine Learning Core (Phase 1 → AI-002)
 
 Aligns with IBM Machine Learning Professional Certificate (Coursera) courses 1–4:
 
@@ -66,9 +106,9 @@ Aligns with IBM Machine Learning Professional Certificate (Coursera) courses 1�
 | Cross-validation, Metrics | ML Pipelines and Deployment | ✅ |
 | scikit-learn workflows | Throughout | ✅ |
 
-**Assessment:** Good alignment. Covers the core sklearn ecosystem. Some advanced topics (ensemble methods depth, hyperparameter tuning) could be expanded in Phase 1 content work.
+**Assessment:** Good coverage of core sklearn ecosystem. Some advanced topics (ensemble methods depth, hyperparameter tuning) could be expanded.
 
-### 2.3 Applied AI & Production Alignment
+### 3.3 Applied AI & Production (Phase 2 → AI-003)
 
 | Phase 2 Topic | IBM/Industry Standard | Coverage |
 |--------------|----------------------|----------|
@@ -78,47 +118,37 @@ Aligns with IBM Machine Learning Professional Certificate (Coursera) courses 1�
 | Feature stores, pipelines | IBM Watson Studio patterns | ⚠️ Partial |
 | LLM integration (Phase 2 end) | IBM WatsonX / OpenAI API | ⚠️ Noted in days 14–17 |
 
-**Assessment:** Phase 2 is the most forward-looking section. LLM/WatsonX coverage in the last few days is directionally correct but may need curriculum review to align with current IBM WatsonX API (significant changes in 2024–2025). **Flag for content review before PUBLISHED.**
+**⚠️ AI Content Controls:** LLM/WatsonX coverage in days 11–17 is directionally correct but requires curriculum review before `PUBLISHED` per master plan §19.2. IBM WatsonX API changed significantly in 2024–2025. **Flag for content review before advancing past IN_REVIEW.**
 
 ---
 
-## 3. Lab Coverage Assessment
+## 4. Lab Coverage Assessment
 
-### 3.1 ibmLabs.js (55 entries)
+### 4.1 ibmLabs.js (55 entries — ✅ ACTUAL, Phase 4 scope)
 
-Coverage breakdown by tool/domain:
+| Category | Approx. Count | Key Tools | Course Mapping |
+|----------|--------------|-----------|----------------|
+| Python fundamentals | ~8 | Python stdlib, file I/O | AI-001 |
+| Data analysis | ~12 | Pandas, Polars, NumPy, Matplotlib | AI-001 |
+| Machine learning | ~15 | scikit-learn, MLflow, Jupyter | AI-002 |
+| Deployment | ~10 | FastAPI, Docker, pytest | AI-003 |
+| Advanced/Production | ~10 | LangChain, OpenAI API, Redis, Celery | AI-003 |
 
-| Category | Approx. Count | Key Tools |
-|----------|--------------|-----------|
-| Python fundamentals | ~8 | Python stdlib, file I/O |
-| Data analysis | ~12 | Pandas, Polars, NumPy, Matplotlib |
-| Machine learning | ~15 | scikit-learn, MLflow, Jupyter |
-| Deployment | ~10 | FastAPI, Docker, pytest |
-| Advanced/Production | ~10 | LangChain, OpenAI API, Redis, Celery |
-
-**Quality assessment:** Good. Steps are actionable with real code snippets. Polars coverage is a differentiator (more current than pandas-only curricula).
-
-### 3.2 Lab Mapping to Courses
-
-Labs map straightforwardly to the 3-phase course structure:
-- Python fundamentals + data analysis labs → Python Fundamentals course
-- ML labs → Machine Learning Core course  
-- Deployment + advanced labs → Applied AI & Production course
-
-Each lab becomes a `LAB`-type lesson with a companion `Lab` row for `steps_json`.
+**Quality note:** Polars coverage is a differentiator vs. pandas-only curricula. Steps are actionable with real code snippets.
 
 ---
 
-## 4. Question Bank Mapping
+## 5. Question Bank Mapping
 
-### 4.1 pythonCertExam.js (100 MCQ questions)
+### 5.1 pythonCertExam.js (100 questions — SHARED with DOM-01)
 
-**Key point:** This file is **shared** between the Cybersecurity Bootcamp (Python section) and the IBM bootcamp. In StudyHub:
-- Questions are tagged with `domain = "Python"` and appropriate `topic_tag` values
-- The same question can appear in both the Cybersecurity and IBM Python courses' exam pools
-- No duplication in the database — `exam_question_pool` junction table handles multi-course membership
+This file is **shared** between CYB-004 (DOM-01 Cybersecurity) and AI-001 (DOM-03 AI/ML). In StudyHub, the sharing is handled via the `question_certification_pool` junction table per §18.3 content-certification separation:
 
-**Domain breakdown (estimated from content):**
+- Questions tagged with `domain = "Python"` and `topic_tag` values
+- Same question row appears in both CYB-004 and AI-001 exam pools via junction table
+- No duplication in the database
+
+**Domain breakdown (estimated):**
 
 | Topic Area | Approx. Questions |
 |------------|------------------|
@@ -130,45 +160,38 @@ Each lab becomes a `LAB`-type lesson with a companion `Lab` row for `steps_json`
 | Libraries (os, sys, json, re) | ~10 |
 | NumPy / Pandas basics | ~15 |
 
-### 4.2 ML Assessment Gap
+### 5.2 ML Assessment Gap
 
-**No ML-specific exam file exists** in the current bootcamp. `pythonCertExam.js` covers Python fundamentals only. For the ML Core and Applied AI courses, assessment content needs to be authored in Phase 1.
+**No ML-specific exam file exists** in the current bootcamp. `pythonCertExam.js` covers Python fundamentals only. For AI-002 (ML Core) and AI-003 (Applied AI):
 
-**Action required (Phase 1):** Author or source ~100 ML/AI assessment questions aligned to IBM ML Professional Certificate objectives. These should cover: sklearn APIs, evaluation metrics, overfitting/underfitting, MLOps concepts, model deployment patterns.
-
----
-
-## 5. Seed Script Prerequisites
-
-Before the seed script can be finalized (task #141):
-
-1. ✅ DB schema stable (V7–V10 migrations)
-2. ✅ Content model entities committed
-3. ⏳ **Owner validation of this curriculum map** (phase-to-course naming, module boundaries)
-4. ⏳ ML assessment gap acknowledged and scoped (Phase 1 content work)
-5. ⏳ Phase key normalization decision: `'0'`/`'1'`/`'2'` → course slugs
-
-**Phase key normalization proposal:**
-
-| Source key | Proposed course slug | Proposed course title |
-|------------|---------------------|----------------------|
-| `'0'` | `python-fundamentals` | Python Fundamentals |
-| `'1'` | `machine-learning-core` | Machine Learning Core |
-| `'2'` | `applied-ai-production` | Applied AI & Production |
+**Action (Phase 4):** Author or source ~100 ML/AI assessment questions aligned to IBM ML Professional Certificate objectives. These should cover: sklearn APIs, evaluation metrics, overfitting/underfitting, MLOps concepts, model deployment patterns.
 
 ---
 
-## 6. Validation Checklist (Owner Review)
+## 6. Validation Checklist (Owner Review — Phase 4 Gate)
 
-Before this document is used to drive the seed script, the owner should confirm:
+This checklist gates Phase 4 DOM-03 seed script execution, **not Sprint 3**:
 
-- [ ] Discipline name: "IBM Python + ML" vs. "IBM Data Science & AI" vs. another name
-- [ ] Course titles match learner expectations
-- [ ] Phase key normalization proposal accepted (or provide alternate slugs/titles)
-- [ ] ML assessment gap acknowledged as Phase 1 work (not Sprint 3 blocker)
-- [ ] LLM/WatsonX content in Phase 2 days 14–17 to be reviewed before publishing
-- [ ] `pythonCertExam.js` sharing strategy accepted (single question bank, tagged, multi-course)
+- [ ] Course IDs AI-001 / AI-002 / AI-003 confirmed (or master plan assigns different IDs)
+- [ ] Course titles and slugs confirmed
+- [ ] Phase key normalization proposal accepted (`'0'`/`'1'`/`'2'` → course slugs)
+- [ ] ML assessment gap acknowledged as Phase 4 content work
+- [ ] LLM/WatsonX content in Phase 2 days 11–17 scheduled for curriculum review before publishing
+- [ ] `pythonCertExam.js` sharing strategy confirmed (single question bank, tagged, multi-course via junction table)
+- [ ] DOM-03 domain scope confirmed as separate from DOM-01
 
 ---
 
-*Document produced by Claude Sonnet 4.6, Sprint 3. Source: `STUDYHUB_CONTENT_AUDIT.md` §4. Official IBM curriculum alignment based on IBM Skills Network Python for Data Science course and IBM Machine Learning Professional Certificate (Coursera), current as of training data cutoff.*
+## 7. Sprint 3 Action Summary
+
+| Item | Sprint 3 Action | Phase 4 Action |
+|------|----------------|----------------|
+| ibmCurriculum.js (57 days) | No seed — Phase 4 scope | Seed as DRAFT with phase key normalization |
+| ibmLabs.js (55 labs) | No seed — Phase 4 scope | Seed as LAB-type lessons |
+| pythonCertExam.js (100 Qs) | Acknowledge shared ownership; document junction table strategy | Execute junction table population for AI-001 pool |
+| Course IDs | Record as PROPOSED placeholders | Confirm with master plan Phase 4 planning |
+| AI content controls | Flag as requirement for days 11–17 | Enforce IN_REVIEW gate before PUBLISHED |
+
+---
+
+*Document produced by Claude Sonnet 4.6, Sprint 3. Governing reference: StudyHub Global Curriculum & Certification Master Plan 2026–2027. Official IBM curriculum alignment based on IBM Skills Network Python for Data Science course and IBM Machine Learning Professional Certificate (Coursera), current as of training data cutoff (August 2025).*
