@@ -90,7 +90,7 @@ class ConcurrencyTest {
                         code
                     );
                     successCount.incrementAndGet();
-                } catch (RegistrationException | Exception ex) {
+                } catch (Exception ex) {
                     failureCount.incrementAndGet();
                 }
                 return null;
