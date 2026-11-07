@@ -78,17 +78,19 @@ public class SecurityConfig {
                 sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
             // 2. CSRF — double-submit cookie pattern (DR-009)
-            //    ignoringRequestMatchers paths include the context-path prefix /api
-            //    because Spring Security matches against the full request URI.
+            //    ignoringRequestMatchers paths do NOT include the context-path prefix /api
+            //    because Spring Security matches against the servlet path (after context-path stripping).
             .csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                 .ignoringRequestMatchers(
                     // Health check — no session/cookie context
-                    "/api/actuator/health",
-                    // Login and register: CSRF cookie doesn't exist yet at these calls
-                    "/api/v1/auth/login",
-                    "/api/v1/auth/register"
+                    "/actuator/health",
+                    // Login and register: CSRF cookie doesn't exist yet at these calls.
+                    // Note: Spring Security matches against the servlet path (after the
+                    // context-path /api is stripped), so these paths must NOT include /api.
+                    "/v1/auth/login",
+                    "/v1/auth/register"
                 )
             )
 
@@ -107,6 +109,11 @@ public class SecurityConfig {
                 // Public — no token required
                 .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers(HttpMethod.POST, "/v1/auth/login", "/v1/auth/register").permitAll()
+                // Refresh and logout use the httpOnly refresh cookie (not a Bearer JWT);
+                // they must be permit-all so the JWT filter's missing-token anonymous context
+                // does not trigger a 401 before the controller reads the cookie.
+                // CSRF protection (double-submit cookie) is still enforced on these paths.
+                .requestMatchers(HttpMethod.POST, "/v1/auth/refresh", "/v1/auth/logout").permitAll()
                 // Admin only
                 .requestMatchers("/v1/admin/**").hasRole("ADMIN")
                 // Everything else requires authentication
