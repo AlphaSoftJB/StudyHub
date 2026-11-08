@@ -58,29 +58,42 @@ class CurriculumApiCompatibilityTest {
     // ── Base path assertions ──────────────────────────────────────────────────
 
     @Test
-    @DisplayName("DisciplineController is mapped to /api/v1/disciplines")
+    @DisplayName("DisciplineController servlet path is /v1/disciplines (effective URL /api/v1/disciplines with context-path)")
     void discipline_controller_base_path() {
         RequestMapping rm = DisciplineController.class.getAnnotation(RequestMapping.class);
         assertThat(rm).isNotNull();
-        assertThat(rm.value()).contains("/api/v1/disciplines");
+        // Annotation must NOT include the /api context-path prefix.
+        // Spring MVC matches annotations against the post-strip servlet path.
+        // Effective production URL: /api/v1/disciplines (context-path /api + servlet /v1/disciplines).
+        assertThat(rm.value()).contains("/v1/disciplines");
+        assertThat(rm.value()).as("Annotation must not duplicate context-path /api prefix")
+            .doesNotContain("/api/v1/disciplines");
     }
 
     @Test
-    @DisplayName("LessonController is mapped to /api/v1/lessons")
+    @DisplayName("LessonController servlet path is /v1/lessons (effective URL /api/v1/lessons with context-path)")
     void lesson_controller_base_path() {
         RequestMapping rm = LessonController.class.getAnnotation(RequestMapping.class);
         assertThat(rm).isNotNull();
-        assertThat(rm.value()).contains("/api/v1/lessons");
+        // Same convention: servlet path only; context-path stripped by container before MVC matching.
+        assertThat(rm.value()).contains("/v1/lessons");
+        assertThat(rm.value()).as("Annotation must not duplicate context-path /api prefix")
+            .doesNotContain("/api/v1/lessons");
     }
 
     @Test
-    @DisplayName("ContentAdminController is mapped to /api/v1/admin")
+    @DisplayName("ContentAdminController servlet path is /v1/admin (effective URL /api/v1/admin with context-path)")
     void admin_controller_base_path() {
         RequestMapping rm = ContentAdminController.class.getAnnotation(RequestMapping.class);
         assertThat(rm).isNotNull();
-        assertThat(Arrays.stream(rm.value()).anyMatch(v -> v.startsWith("/api/v1/admin")))
-            .as("Admin controller must be under /api/v1/admin/* to enforce security boundary")
+        // SecurityConfig uses /v1/admin/** (servlet path) for ROLE_ADMIN enforcement.
+        // The annotation must match the same servlet path, not the full /api/v1/admin URL.
+        assertThat(Arrays.stream(rm.value()).anyMatch(v -> v.startsWith("/v1/admin")))
+            .as("Admin controller must be under /v1/admin/* (servlet path, context-path /api stripped)")
             .isTrue();
+        assertThat(Arrays.stream(rm.value()).anyMatch(v -> v.startsWith("/api/v1/admin")))
+            .as("Annotation must not duplicate context-path /api prefix")
+            .isFalse();
     }
 
     // ── Endpoint presence ─────────────────────────────────────────────────────

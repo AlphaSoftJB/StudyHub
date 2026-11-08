@@ -8,9 +8,12 @@ import org.springframework.web.bind.annotation.*;
 /**
  * Learner-facing lesson fetch.
  * Returns 404 for any lesson that is not PUBLISHED (DR-012).
+ *
+ * <p>Path convention: annotation uses the servlet path (without
+ * {@code server.servlet.context-path=/api}). Effective production URL: /api/v1/lessons.
  */
 @RestController
-@RequestMapping("/api/v1/lessons")
+@RequestMapping("/v1/lessons")
 public class LessonController {
 
     private final CurriculumQueryService queryService;
@@ -21,6 +24,7 @@ public class LessonController {
 
     /**
      * GET /api/v1/lessons/{id}
+     * (Servlet path: /v1/lessons/{id}; context-path /api prepended by container.)
      * Returns 404 when id doesn't exist or lesson is not PUBLISHED.
      */
     @GetMapping("/{id}")

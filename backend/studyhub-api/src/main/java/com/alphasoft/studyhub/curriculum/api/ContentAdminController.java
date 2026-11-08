@@ -21,9 +21,13 @@ import java.util.Map;
  *
  * <p>DR-012: AI must not independently certify learner mastery.
  * Publish decisions always require a human admin actor (this endpoint).
+ *
+ * <p>Path convention: annotation uses the servlet path (without
+ * {@code server.servlet.context-path=/api}). Effective production URL: /api/v1/admin/*.
+ * SecurityConfig {@code /v1/admin/**} rule matches the same servlet path.
  */
 @RestController
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/v1/admin")
 @PreAuthorize("hasRole('ADMIN')")
 public class ContentAdminController {
 

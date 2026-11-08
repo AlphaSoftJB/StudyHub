@@ -15,9 +15,15 @@ import java.util.List;
  * No admin transitions here — those live in {@link ContentAdminController}.
  *
  * <p>DR-015-NATIVE: no web-only response shapes; usable by iOS/Android clients.
+ *
+ * <p>Path convention: annotations use the servlet path (without the
+ * {@code server.servlet.context-path=/api} prefix). Spring MVC matches
+ * annotations against the post-strip servlet path, so the effective
+ * production URL is {@code /api/v1/disciplines}.
+ * This follows the same convention as {@link com.alphasoft.studyhub.identity.api.AuthController}.
  */
 @RestController
-@RequestMapping("/api/v1/disciplines")
+@RequestMapping("/v1/disciplines")
 public class DisciplineController {
 
     private final CurriculumQueryService queryService;
@@ -28,6 +34,7 @@ public class DisciplineController {
 
     /**
      * GET /api/v1/disciplines — Explore page: list of active disciplines.
+     * (Servlet path: /v1/disciplines; context-path /api prepended by container.)
      */
     @GetMapping
     public List<DisciplineDto> listDisciplines() {
@@ -39,6 +46,7 @@ public class DisciplineController {
 
     /**
      * GET /api/v1/disciplines/{slug} — single discipline by slug.
+     * (Servlet path: /v1/disciplines/{slug})
      */
     @GetMapping("/{slug}")
     public ResponseEntity<DisciplineDto> getDiscipline(@PathVariable String slug) {
@@ -50,6 +58,7 @@ public class DisciplineController {
 
     /**
      * GET /api/v1/disciplines/{slug}/courses — courses for a discipline.
+     * (Servlet path: /v1/disciplines/{slug}/courses)
      */
     @GetMapping("/{slug}/courses")
     public ResponseEntity<List<CourseDto>> getCourses(@PathVariable String slug) {
