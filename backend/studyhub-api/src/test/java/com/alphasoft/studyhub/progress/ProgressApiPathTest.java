@@ -32,6 +32,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -165,7 +166,8 @@ class ProgressApiPathTest {
             mockMvc.perform(post("/api/v1/progress/lessons/1/complete").contextPath("/api")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}")
-                        .with(authentication(learnerAuth())))
+                        .with(authentication(learnerAuth()))
+                        .with(csrf()))
                    .andExpect(status().isOk())
                    .andExpect(jsonPath("$.status").value("COMPLETED"))
                    .andExpect(jsonPath("$.xpAwarded").value(10));

@@ -123,7 +123,9 @@ class ProgressServiceTest {
 
             progressService.completeLesson(1L, 999L);
 
-            verify(xpRepo).save(argThat(x -> x.getUserId() == null || true)); // new XP row saved
+            // First completion: (1) xpRepo.save() to lazily create the XP ledger,
+            // (2) xpRepo.save() again to record the awarded XP — both saves are correct.
+            verify(xpRepo, times(2)).save(any());
         }
     }
 
@@ -146,15 +148,14 @@ class ProgressServiceTest {
                     .thenReturn(Optional.of(alreadyDone));
             when(progressRepo.save(any())).thenAnswer(inv -> inv.getArgument(0));
             when(xpRepo.findByUserId(1L)).thenReturn(Optional.of(userXp));
-            when(xpRepo.save(any())).thenAnswer(inv -> inv.getArgument(0));
+            // No xpRepo.save stub — idempotent path skips the XP save branch entirely
 
             LessonCompleteResponse resp = progressService.completeLesson(1L, 999L);
 
             assertThat(resp.status()).isEqualTo(LessonProgressStatus.COMPLETED);
-            // No new XP on idempotent call
             assertThat(resp.xpAwarded()).isEqualTo(ProgressService.XP_PER_LESSON); // existing awarded
-            // XP ledger NOT incremented again
-            verify(xpRepo, never()).save(argThat(x -> x.getTotalXp() > 0));
+            // XP ledger NOT saved again on idempotent call
+            verify(xpRepo, never()).save(any());
         }
     }
 
