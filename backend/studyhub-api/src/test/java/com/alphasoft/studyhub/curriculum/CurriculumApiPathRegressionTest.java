@@ -6,6 +6,7 @@ import com.alphasoft.studyhub.curriculum.api.DisciplineController;
 import com.alphasoft.studyhub.curriculum.api.LessonController;
 import com.alphasoft.studyhub.curriculum.service.ContentLifecycleService;
 import com.alphasoft.studyhub.curriculum.service.CurriculumQueryService;
+import com.alphasoft.studyhub.identity.security.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -70,6 +71,11 @@ class CurriculumApiPathRegressionTest {
 
     @MockBean
     private ContentLifecycleService contentLifecycleService;
+
+    // JwtAuthenticationFilter is included by security auto-config; JwtService
+    // is not in the @WebMvcTest slice — mock it so the context loads.
+    @MockBean
+    private JwtService jwtService;
 
     private MockMvc mockMvc;
 
