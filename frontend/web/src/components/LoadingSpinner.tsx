@@ -1,7 +1,7 @@
 export function LoadingSpinner({ label = 'Loading…' }: { label?: string }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
-      <span>{label}</span>
+      <span role="status" aria-live="polite">{label}</span>
     </div>
   );
 }
