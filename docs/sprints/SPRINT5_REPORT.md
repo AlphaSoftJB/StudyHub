@@ -128,11 +128,11 @@ The existing bootcamp at `index.html`, `ai.html`, `ibm.html`, `cyber.html` and a
 
 ---
 
-## 7. Commits Pending
+## 7. Commit
 
-Changes are staged and ready to commit to `studyhub-dev`. Awaiting authorization per MANDATORY GIT VERSION CONTROL policy.
+Committed to `studyhub-dev` as `a8d4732`.
 
-**Files changed:**
+**22 files changed, 1915 insertions(+), 0 deletions(-):**
 ```
 backend/studyhub-api/src/main/resources/db/migration/V11__create_progress_tables.sql
 backend/studyhub-api/src/main/java/com/alphasoft/studyhub/progress/  (11 new files)
@@ -146,4 +146,125 @@ frontend/web/src/App.tsx                    (/dashboard route + nav link)
 docs/sprints/SPRINT5_REPORT.md
 ```
 
-**Not changed:** `main` branch, GitHub Pages, existing bootcamp files.
+**Not changed:** `main` branch (HEAD: `c84f920`), GitHub Pages, existing bootcamp files.
+
+---
+
+## 8. Sprint 5 Verification Results
+
+Verification performed 2026-11-15 against commit `a8d4732` on branch `studyhub-dev`.
+
+### 8.1 Git Verification — ✅ PASSED
+
+| Check | Result |
+|-------|--------|
+| Branch | `studyhub-dev` ✓ |
+| HEAD commit | `a8d4732` ✓ |
+| Working tree | Clean (no uncommitted changes) ✓ |
+| `main` HEAD | `c84f920` — unchanged from pre-sprint ✓ |
+| Sprint 5 commit scope | 22 files, 1915 insertions, 0 deletions — all additive ✓ |
+
+### 8.2 Backend Maven Verification — ⚠️ STATIC REVIEW (Maven Central unreachable in sandbox)
+
+Maven Central is blocked by the egress proxy (pre-existing constraint, all sprints). Tests cannot be compiled or run in the sandbox.
+
+**Static review result:**
+
+| Check | Result |
+|-------|--------|
+| All 14 backend source files present on disk | ✓ |
+| All cross-package imports valid (resolved against source tree) | ✓ |
+| ProgressServiceTest: 8 unit tests (PS-01 through PS-07 + DR-022 structural) | ✓ present |
+| ProgressApiPathTest: 6 @WebMvcTest tests (3 unauth + 3 auth) | ✓ present |
+| **Action required:** Run `mvn test -pl backend/studyhub-api` locally to execute tests | PENDING USER |
+
+### 8.3 Flyway V11 / MySQL Verification — ⚠️ STATIC REVIEW (MySQL unavailable in sandbox)
+
+MySQL is not available in this sandbox environment (no binary, no process, no container).
+
+**Static review result:**
+
+| Check | Result |
+|-------|--------|
+| V11 file present: `V11__create_progress_tables.sql` | ✓ |
+| All Flyway migrations V1–V11 present and sequenced | ✓ |
+| V11 uses H2-compatible patterns (identical to V10) | ✓ AUTO_INCREMENT, DATETIME(6), ON UPDATE CURRENT_TIMESTAMP(6) |
+| `uq_user_lesson(user_id, lesson_id)` UNIQUE KEY present | ✓ idempotent completion enforced at DB level |
+| `user_xp.user_id` is PRIMARY KEY (single row per learner) | ✓ |
+| `@MapsId` pattern correct — `createFor()` sets `xp.userId = user.getId()` | ✓ |
+| **Action required:** Start app against local MySQL, verify V11 applies cleanly | PENDING USER |
+
+### 8.4 API and Authorization Verification — ✅ PASSED (static + test code review)
+
+| Check | Result |
+|-------|--------|
+| `userId` from `@AuthenticationPrincipal JwtPrincipal` only — never from request body/params | ✓ Both controllers, all 3 endpoints |
+| Unauthenticated → 401 (not 404) for all 3 endpoints | ✓ Verified in `ProgressApiPathTest` and `SecurityConfig` (`anyRequest().authenticated()`) |
+| POST `/api/v1/progress/lessons/{id}/complete` → CSRF enforced (not in `ignoringRequestMatchers`) | ✓ |
+| Idempotent completion — `progress.complete(xp)` checks `status == COMPLETED` before mutating | ✓ |
+| XP not re-awarded on duplicate call — `xpAwarded = xpBefore == progress.getXpAwarded() - xpBefore` | ✓ |
+| 404 for unpublished/nonexistent lessons — `findPublishedById` throws `ResponseStatusException(NOT_FOUND)` | ✓ |
+| Dashboard computes completion % with `Math.min(100, completed * 100L / published)` — no overflow | ✓ |
+| No N+1 on dashboard — 3 aggregate queries + 1 `findAllById` | ✓ |
+| **Action required:** Integration test with live MySQL (see §8.3) | PENDING USER |
+
+### 8.5 Frontend Verification — ✅ PASSED
+
+| Check | Result |
+|-------|--------|
+| Vitest suite | **42/42 pass** ✓ |
+| Production build | **251 modules, 447 KB / 141 KB gzip** ✓ |
+| No localStorage/sessionStorage in new Sprint 5 files | ✓ Confirmed by grep |
+| `progress.ts` API paths use `/api/v1/...` prefix (matches `curriculum.ts` pattern) | ✓ |
+| `useLessonCompletion` — DR-022 comment present, no mastery inference | ✓ |
+| `LearnerDashboard` — empty state renders "Browse courses →" | ✓ |
+| `LessonPage` — Mark as Complete button disabled during in-flight request | ✓ |
+| `/dashboard` route is `RequireAuth`-protected | ✓ |
+
+### 8.6 Scope and Architecture Review — ✅ PASSED
+
+| Check | Result |
+|-------|--------|
+| DR-022: `LessonCompleteResponse` has no mastery field | ✓ Verified on record definition |
+| DR-022: No mastery inference in frontend hooks | ✓ Grep confirms |
+| DR-022: Structural test exists (`DR-022: LessonCompleteResponse has no mastery field` via reflection) | ✓ |
+| DR-023: GistSync / existing bootcamp untouched | ✓ Sprint 5 commit has 0 deletions; no bootcamp files in diff |
+| `user_xp` table justified: cumulative XP ledger; single row per user (PK=userId via @MapsId) | ✓ |
+| No unapproved features (notifications, badges, leaderboards, certificates) | ✓ Grep confirms |
+| `main` branch HEAD unchanged at `c84f920` | ✓ |
+| Existing bootcamp files not in sprint 5 commit | ✓ All 22 changed files are in `backend/`, `frontend/web/src/`, or `docs/` |
+
+### 8.7 Outstanding Items (Require User's Local Environment)
+
+The following checks **cannot** be performed in the cloud sandbox and require the user to execute against their local MySQL instance:
+
+1. **Flyway V11 migration runtime**: Start the Spring Boot app with `spring.profiles.active=` (empty, uses production MySQL). Verify `flyway_schema_history` shows V11 as `success=1`.
+
+2. **Full API integration test**: With app running, call:
+   - `POST /api/v1/progress/lessons/{id}/complete` (authenticated) → expect 200 with `status=COMPLETED`, `xpAwarded=10`
+   - Repeat call → expect 200 with `xpAwarded=0` (idempotent)
+   - `GET /api/v1/learner/dashboard` → expect `totalXp=10`, `completedLessons=1`
+   - `POST /api/v1/progress/lessons/{nonexistent}/complete` → expect 404
+
+3. **Backend unit + WebMvcTest**: `mvn test -pl backend/studyhub-api` — 8 unit tests + 6 WebMvcTest should pass.
+
+4. **Data isolation**: Confirm that user A's progress is not visible to user B (different JWT, same lesson ID).
+
+### 8.8 Summary Verdict
+
+| Area | Status |
+|------|--------|
+| Git hygiene | ✅ PASS |
+| Backend static review | ✅ PASS |
+| Flyway migration (static) | ✅ PASS |
+| API authorization model | ✅ PASS |
+| Frontend Vitest (42/42) | ✅ PASS |
+| Frontend build | ✅ PASS |
+| DR-022 mastery separation | ✅ PASS |
+| DR-023 bootcamp preservation | ✅ PASS |
+| Scope / no unapproved features | ✅ PASS |
+| Backend Maven test execution | ⚠️ PENDING (requires local env) |
+| Flyway V11 runtime | ⚠️ PENDING (requires local MySQL) |
+| Full API integration test | ⚠️ PENDING (requires local MySQL) |
+
+**Sprint 5 is ready for user-side runtime acceptance testing.** All static-verifiable checks pass. The implementation is structurally correct and matches the design decisions enforced by the sprint plan.
