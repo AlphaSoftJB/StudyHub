@@ -77,10 +77,10 @@ class ProgressServiceTest {
         setId(user, 1L);
 
         // Build a minimal Discipline → Course → Module → Lesson hierarchy
-        var disc = new Discipline("CompTIA", "comptia", "CompTIA certs");
+        var disc = new Discipline("CompTIA", "comptia", "CompTIA certs", "shield");
         var course = new Course(disc, "Network+", "network-plus", "Networking fundamentals");
         setId(course, 10L);
-        var module = new Module(course, "Intro", 1);
+        var module = new Module(course, "Intro");
         setId(module, 100L);
 
         publishedLesson = buildLesson(module, "OSI Model", 999L, ContentStatus.PUBLISHED);
@@ -245,7 +245,7 @@ class ProgressServiceTest {
         @Test
         @DisplayName("PS-06: dashboard shows correct completion percentage")
         void dashboard_shows_completion_percentage() {
-            var disc = new Discipline("CompTIA", "comptia", "certs");
+            var disc = new Discipline("CompTIA", "comptia", "certs", "shield");
             var course = new Course(disc, "Network+", "network-plus", "desc");
             setId(course, 10L);
 
@@ -257,9 +257,9 @@ class ProgressServiceTest {
             when(progressRepo.findDistinctCourseIdsByUserId(1L))
                     .thenReturn(List.of(10L));
             when(progressRepo.countPublishedLessonsPerCourse(List.of(10L)))
-                    .thenReturn(List.of(new Object[]{10L, 4L}));
+                    .thenReturn(List.<Object[]>of(new Object[]{10L, 4L}));
             when(progressRepo.countCompletedPerCourse(1L, List.of(10L)))
-                    .thenReturn(List.of(new Object[]{10L, 2L}));
+                    .thenReturn(List.<Object[]>of(new Object[]{10L, 2L}));
             when(courseRepo.findAllById(List.of(10L)))
                     .thenReturn(List.of(course));
 
@@ -296,7 +296,9 @@ class ProgressServiceTest {
     private static Lesson buildLesson(Module module, String title, Long id, ContentStatus status)
             throws Exception {
         // Use Lesson's protected no-arg constructor via reflection
-        var l = new Lesson();
+        var ctor = Lesson.class.getDeclaredConstructor();
+        ctor.setAccessible(true);
+        var l = (Lesson) ctor.newInstance();
         setId(l, id);
         // Set required fields via reflection (Lesson has no public multi-arg constructor)
         set(l, "module", module);

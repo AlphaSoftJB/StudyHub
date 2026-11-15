@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 public class ProgressService {
 
     /** XP awarded per lesson completion.  Constant for Sprint 5; configurable later. */
-    static final int XP_PER_LESSON = 10;
+    public static final int XP_PER_LESSON = 10;
 
     private final UserLessonProgressRepository progressRepo;
     private final UserXpRepository             xpRepo;
