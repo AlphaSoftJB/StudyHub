@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { ErrorMessage, LoadingSpinner } from '../components/LoadingSpinner';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import { useLesson } from '../hooks/useCurriculum';
+import { useLessonCompletion } from '../hooks/useProgress';
 
 const LESSON_TYPE_LABEL: Record<string, string> = {
   NOTES: '📄 Notes',
@@ -15,6 +16,12 @@ export function LessonPage() {
   const { id } = useParams<{ id: string }>();
   const lessonId = id ? parseInt(id, 10) : undefined;
   const { data: lesson, loading, error } = useLesson(lessonId);
+  const {
+    completing,
+    result: completionResult,
+    error: completionError,
+    completeLesson,
+  } = useLessonCompletion(lessonId);
 
   if (loading) return <LoadingSpinner label="Loading lesson…" />;
   if (error) return <ErrorMessage message={error} />;
@@ -57,6 +64,64 @@ export function LessonPage() {
       ) : (
         <p style={{ color: '#6b7280' }}>No content available for this lesson yet.</p>
       )}
+
+      {/* ── Mark Complete ───────────────────────────────────────────────────── */}
+      <footer
+        style={{
+          marginTop: '3rem',
+          paddingTop: '1.5rem',
+          borderTop: '1px solid #e5e7eb',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem',
+          flexWrap: 'wrap',
+        }}
+      >
+        {completionResult ? (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              color: '#16a34a',
+              fontWeight: 600,
+            }}
+          >
+            <span style={{ fontSize: '1.25rem' }}>✓</span>
+            <span>
+              Lesson complete!{' '}
+              <span style={{ color: '#6b7280', fontWeight: 400 }}>
+                +{completionResult.xpAwarded} XP · {completionResult.totalXp} total
+              </span>
+            </span>
+          </div>
+        ) : (
+          <button
+            onClick={completeLesson}
+            disabled={completing}
+            style={{
+              padding: '0.625rem 1.25rem',
+              borderRadius: '0.375rem',
+              border: 'none',
+              background: completing ? '#d1fae5' : '#16a34a',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '0.9375rem',
+              cursor: completing ? 'not-allowed' : 'pointer',
+              opacity: completing ? 0.7 : 1,
+              transition: 'background 0.15s',
+            }}
+          >
+            {completing ? 'Marking…' : '✓ Mark as Complete'}
+          </button>
+        )}
+
+        {completionError && (
+          <span style={{ fontSize: '0.875rem', color: '#dc2626' }}>
+            {completionError}
+          </span>
+        )}
+      </footer>
     </main>
   );
 }

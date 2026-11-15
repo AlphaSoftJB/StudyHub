@@ -3,6 +3,7 @@ import { BrowserRouter, Link, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { RequireAuth } from './components/RequireAuth';
 import { ExploreDisciplinePage, ExploreListPage } from './pages/ExplorePage';
+import { LearnerDashboard } from './pages/LearnerDashboard';
 import { LessonPage } from './pages/LessonPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
@@ -70,6 +71,12 @@ function AppShell({ children }: { children: React.ReactNode }) {
 
           {status === 'authenticated' && user && (
             <>
+              <Link
+                to="/dashboard"
+                style={{ fontSize: '0.875rem', color: '#2563eb', textDecoration: 'none' }}
+              >
+                Dashboard
+              </Link>
               <span style={{ fontSize: '0.875rem', color: '#374151' }}>
                 {user.displayName}
               </span>
@@ -135,6 +142,14 @@ export default function App() {
               element={
                 <RequireAuth>
                   <LessonPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <RequireAuth>
+                  <LearnerDashboard />
                 </RequireAuth>
               }
             />
