@@ -152,7 +152,7 @@ docs/sprints/SPRINT5_REPORT.md
 
 ## 8. Sprint 5 Verification Results
 
-Verification performed 2026-11-15 against commit `a8d4732` on branch `studyhub-dev`.
+Verification performed 2026-11-15 against commits `a8d4732` → `b1ef9f0` on branch `studyhub-dev`.
 
 ### 8.1 Git Verification — ✅ PASSED
 
@@ -164,19 +164,24 @@ Verification performed 2026-11-15 against commit `a8d4732` on branch `studyhub-d
 | `main` HEAD | `c84f920` — unchanged from pre-sprint ✓ |
 | Sprint 5 commit scope | 22 files, 1915 insertions, 0 deletions — all additive ✓ |
 
-### 8.2 Backend Maven Verification — ⚠️ STATIC REVIEW (Maven Central unreachable in sandbox)
+### 8.2 Backend Maven Verification — ✅ PASSED (executed locally by user)
 
-Maven Central is blocked by the egress proxy (pre-existing constraint, all sprints). Tests cannot be compiled or run in the sandbox.
-
-**Static review result:**
+Tests executed locally by user on 2026-11-15 against commit `b1ef9f0`.
 
 | Check | Result |
 |-------|--------|
 | All 14 backend source files present on disk | ✓ |
-| All cross-package imports valid (resolved against source tree) | ✓ |
-| ProgressServiceTest: 8 unit tests (PS-01 through PS-07 + DR-022 structural) | ✓ present |
-| ProgressApiPathTest: 6 @WebMvcTest tests (3 unauth + 3 auth) | ✓ present |
-| **Action required:** Run `mvn test -pl backend/studyhub-api` locally to execute tests | PENDING USER |
+| All cross-package imports valid | ✓ |
+| ProgressServiceTest: 8 unit tests (PS-01 through PS-07 + DR-022 structural) | ✅ PASS |
+| ProgressApiPathTest: 6 @WebMvcTest tests (3 unauth + 3 auth) | ✅ PASS |
+| **Total: 110 tests run, 0 failures, 0 errors** | ✅ **BUILD SUCCESS** |
+| Build time | 23.061 s |
+
+Three test issues resolved during this verification session (commits `9047a13`, `fee261b`, `b1ef9f0`):
+- 10 compilation errors in `ProgressServiceTest` (constructor signatures, visibility, type inference, reflection)
+- `xpRepo.save` called twice on first completion — test corrected to `times(2)`
+- POST endpoint requires CSRF token in `@WebMvcTest` — added `.with(csrf())`
+- Unnecessary stub in idempotent test — removed per Mockito strict stubbing rules
 
 ### 8.3 Flyway V11 / MySQL Verification — ⚠️ STATIC REVIEW (MySQL unavailable in sandbox)
 
@@ -238,7 +243,7 @@ MySQL is not available in this sandbox environment (no binary, no process, no co
 
 The following checks **cannot** be performed in the cloud sandbox and require the user to execute against their local MySQL instance:
 
-1. **Flyway V11 migration runtime**: Start the Spring Boot app with `spring.profiles.active=` (empty, uses production MySQL). Verify `flyway_schema_history` shows V11 as `success=1`.
+1. **Flyway V11 migration runtime**: Start the Spring Boot app against local MySQL. Verify `flyway_schema_history` shows V11 as `success=1`.
 
 2. **Full API integration test**: With app running, call:
    - `POST /api/v1/progress/lessons/{id}/complete` (authenticated) → expect 200 with `status=COMPLETED`, `xpAwarded=10`
@@ -246,9 +251,7 @@ The following checks **cannot** be performed in the cloud sandbox and require th
    - `GET /api/v1/learner/dashboard` → expect `totalXp=10`, `completedLessons=1`
    - `POST /api/v1/progress/lessons/{nonexistent}/complete` → expect 404
 
-3. **Backend unit + WebMvcTest**: `mvn test -pl backend/studyhub-api` — 8 unit tests + 6 WebMvcTest should pass.
-
-4. **Data isolation**: Confirm that user A's progress is not visible to user B (different JWT, same lesson ID).
+3. **Data isolation**: Confirm that user A's progress is not visible to user B (different JWT, same lesson ID).
 
 ### 8.8 Summary Verdict
 
@@ -263,8 +266,8 @@ The following checks **cannot** be performed in the cloud sandbox and require th
 | DR-022 mastery separation | ✅ PASS |
 | DR-023 bootcamp preservation | ✅ PASS |
 | Scope / no unapproved features | ✅ PASS |
-| Backend Maven test execution | ⚠️ PENDING (requires local env) |
+| Backend Maven test execution (110/110) | ✅ PASS |
 | Flyway V11 runtime | ⚠️ PENDING (requires local MySQL) |
 | Full API integration test | ⚠️ PENDING (requires local MySQL) |
 
-**Sprint 5 is ready for user-side runtime acceptance testing.** All static-verifiable checks pass. The implementation is structurally correct and matches the design decisions enforced by the sprint plan.
+**Sprint 5 backend test suite is fully green (110/110).** All static-verifiable checks pass. The two remaining items require starting the app against local MySQL — Flyway V11 runtime validation and live API integration testing.
