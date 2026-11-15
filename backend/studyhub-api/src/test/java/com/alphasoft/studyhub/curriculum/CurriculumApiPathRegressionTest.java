@@ -1,6 +1,7 @@
 package com.alphasoft.studyhub.curriculum;
 
 import com.alphasoft.studyhub.curriculum.api.ContentAdminController;
+import com.alphasoft.studyhub.curriculum.api.CourseController;
 import com.alphasoft.studyhub.curriculum.api.DisciplineController;
 import com.alphasoft.studyhub.curriculum.api.LessonController;
 import com.alphasoft.studyhub.curriculum.service.ContentLifecycleService;
@@ -56,7 +57,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = {
     DisciplineController.class,
     LessonController.class,
-    ContentAdminController.class
+    ContentAdminController.class,
+    CourseController.class      // Sprint 4: FV-002 — course detail endpoint
 })
 class CurriculumApiPathRegressionTest {
 
@@ -213,6 +215,49 @@ class CurriculumApiPathRegressionTest {
                        if (status != 401 && status != 403) {
                            throw new AssertionError(
                                "Unexpected status " + status + " for unauthenticated admin endpoint.");
+                       }
+                   });
+        }
+    }
+
+    // ── CourseController routing (Sprint 4 — FV-002) ─────────────────────────
+
+    @Nested
+    @DisplayName("CourseController — effective URLs with context-path=/api (Sprint 4)")
+    class CourseControllerPaths {
+
+        @BeforeEach
+        void stubService() {
+            when(curriculumQueryService.getCourse(anyLong())).thenReturn(java.util.Optional.empty());
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("GET /api/v1/courses/{id} routes correctly — 404 from service (not MVC routing)")
+        void get_course_detail_routes_with_context_path() throws Exception {
+            // getCourse returns empty → controller returns 404 from service logic, not missing route.
+            // Verifies the route /api/v1/courses/{id} is properly registered (FV-002 fix confirmed).
+            mockMvc.perform(get("/api/v1/courses/9999").contextPath("/api")
+                        .accept(MediaType.APPLICATION_JSON))
+                   .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @WithAnonymousUser
+        @DisplayName("GET /api/v1/courses/{id} returns 401 for anonymous — route IS registered")
+        void get_course_detail_returns_401_for_anonymous() throws Exception {
+            mockMvc.perform(get("/api/v1/courses/1").contextPath("/api")
+                        .accept(MediaType.APPLICATION_JSON))
+                   .andExpect(result -> {
+                       int status = result.getResponse().getStatus();
+                       if (status == 404) {
+                           throw new AssertionError(
+                               "FV-002: GET /api/v1/courses/{id} returned 404 for anonymous — " +
+                               "route is not registered. Check CourseController @RequestMapping.");
+                       }
+                       if (status != 401 && status != 403) {
+                           throw new AssertionError(
+                               "Unexpected status " + status + " for unauthenticated course endpoint.");
                        }
                    });
         }

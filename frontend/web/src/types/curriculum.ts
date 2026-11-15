@@ -45,3 +45,25 @@ export interface LessonDetail {
   sequenceOrder: number;
   publishedAt: string | null; // ISO 8601
 }
+
+// ── Course detail (Sprint 4 — FV-002) ─────────────────────────────────────────
+// Mirrors CourseDetailDto / ModuleSummaryDto from the backend.
+// All lessons in each module are PUBLISHED (filtered server-side, DR-012).
+
+export interface ModuleSummary {
+  id: number;
+  courseId: number;
+  title: string;
+  sequenceOrder: number;
+  lessons: LessonSummary[];
+}
+
+export interface CourseDetail {
+  id: number;
+  disciplineId: number;
+  title: string;
+  slug: string;
+  description: string | null;
+  sequenceOrder: number;
+  modules: ModuleSummary[];
+}

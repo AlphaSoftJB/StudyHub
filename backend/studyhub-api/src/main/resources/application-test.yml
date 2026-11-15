@@ -1,4 +1,13 @@
 # Test profile — uses H2 in-memory; Flyway runs migrations against H2
+#
+# FV-006 fix (Sprint 4): server.servlet.context-path=/api is now explicitly set here
+# to match production. Without this, MockMvc tests run against the default context-path ""
+# and cannot detect double-prefix (/api/api/...) or missing-prefix defects.
+# See CurriculumApiPathRegressionTest for the regression suite that validates this.
+server:
+  servlet:
+    context-path: /api
+
 spring:
   datasource:
     url: jdbc:h2:mem:studyhub_test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
