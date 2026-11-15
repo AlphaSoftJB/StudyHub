@@ -29,7 +29,7 @@ public class Lab {
     private String tool;
 
     // 1 (easiest) to 5 (hardest)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TINYINT")
     private int difficulty = 2;
 
     @Column(columnDefinition = "TEXT")

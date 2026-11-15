@@ -58,7 +58,7 @@ public class Question {
     private String topicTag;
 
     // 1 (easiest) to 5 (hardest)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TINYINT")
     private int difficulty = 2;
 
     @Enumerated(EnumType.STRING)
