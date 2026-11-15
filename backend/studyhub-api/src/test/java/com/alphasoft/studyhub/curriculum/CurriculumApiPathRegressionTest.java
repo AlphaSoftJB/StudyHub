@@ -102,9 +102,6 @@ class CurriculumApiPathRegressionTest {
         @WithMockUser
         @DisplayName("GET /api/v1/disciplines routes correctly — not 404 (FV-001 regression)")
         void list_disciplines_routes_with_context_path() throws Exception {
-            mockMvc.perform(get("/api/v1/disciplines").contextPath("/api")
-                        .accept(MediaType.APPLICATION_JSON))
-                   .andExpect(status().isNot(status().isNotFound().getMatcher()));
             // 200 expected (empty list from stub); 404 means the bug is back
             mockMvc.perform(get("/api/v1/disciplines").contextPath("/api")
                         .accept(MediaType.APPLICATION_JSON))
