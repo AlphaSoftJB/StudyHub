@@ -244,7 +244,7 @@ class ProgressServiceTest {
 
         @Test
         @DisplayName("PS-06: dashboard shows correct completion percentage")
-        void dashboard_shows_completion_percentage() {
+        void dashboard_shows_completion_percentage() throws Exception {
             var disc = new Discipline("CompTIA", "comptia", "certs", "shield");
             var course = new Course(disc, "Network+", "network-plus", "desc");
             setId(course, 10L);
